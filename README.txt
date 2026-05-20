@@ -75,3 +75,5 @@ Project structure
 - `src/Entity/SoftwareVersion.php` - version entity
 - `templates/software_download/index.html.twig` - customer UI
 - `templates/admin/software_version/*` - admin UI
+
+Maintenance note: README synced (2026-05-21).
