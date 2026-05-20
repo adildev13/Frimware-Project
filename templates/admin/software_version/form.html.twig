@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <h1>{{ title }}</h1>
+        {{ form_start(form) }}
+            <div class="grid">
+                {{ form_row(form.name) }}
+                {{ form_row(form.systemVersion) }}
+                {{ form_row(form.systemVersionAlt) }}
+                {{ form_row(form.link) }}
+                {{ form_row(form.st) }}
+                {{ form_row(form.gd) }}
+                {{ form_row(form.latest) }}
+            </div>
+            <button type="submit">Save</button>
+            <a class="button" href="{{ path('admin_software_versions_index') }}">Back</a>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

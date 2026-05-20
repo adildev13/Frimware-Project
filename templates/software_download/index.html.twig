@@ -1,0 +1,76 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Software Download{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <h1>Update the software for your CarPlay / Android Auto MMI</h1>
+        <form id="software-check-form" class="grid">
+            <div>
+                <label for="version">Software Version</label>
+                <input type="text" id="version" name="version" placeholder="Your software version*" required>
+            </div>
+            <div>
+                <label for="mcuVersion">MCU Version Not Required</label>
+                <input type="text" id="mcuVersion" name="mcuVersion" value="" placeholder="Not Required" disabled>
+            </div>
+            <div>
+                <label for="hwVersion">HW Version</label>
+                <input type="text" id="hwVersion" name="hwVersion" placeholder="Your HW version*" required>
+            </div>
+            <div>
+                <button type="submit">Check</button>
+            </div>
+        </form>
+        <p id="result-message"></p>
+        <p id="result-links"></p>
+    </div>
+
+    <div class="card">
+        <strong>Warning!!!</strong>
+        <p>
+            Entering an incorrect software number and uploading it to another version of MMI will brick the MMI.
+            In most cases, this is a reversible process, but impossible to perform without support assistance.
+            BimmerTech is not responsible for errors in software uploading by customers due to uploading the incorrect version.
+            After this step, replacement under warranty cannot be considered.
+        </p>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        const form = document.getElementById('software-check-form');
+        const resultMessage = document.getElementById('result-message');
+        const resultLinks = document.getElementById('result-links');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const formData = new FormData();
+            formData.append('version', document.getElementById('version').value);
+            formData.append('mcuVersion', '');
+            formData.append('hwVersion', document.getElementById('hwVersion').value);
+
+            resultMessage.textContent = '';
+            resultLinks.innerHTML = '';
+
+            try {
+                const response = await fetch('/api2/carplay/software/version', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                resultMessage.className = data.versionExist ? 'alert-green' : 'alert-red';
+                resultMessage.textContent = data.msg || 'No message received.';
+
+                const links = [];
+                if (data.st) links.push('<a href="' + data.st + '" target="_blank">ST Version</a>');
+                if (data.gd) links.push('<a href="' + data.gd + '" target="_blank">GD Version</a>');
+                resultLinks.innerHTML = links.join(' ');
+            } catch (error) {
+                resultMessage.className = 'alert-red';
+                resultMessage.textContent = 'Failed to fetch software details. Please try again.';
+            }
+        });
+    </script>
+{% endblock %}
